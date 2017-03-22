@@ -2,9 +2,13 @@
 - hosts: test_servers 
   become: true
   become_user: root
+  vars:
+    git_packages:
+      - git
   roles:
     - role: geerlingguy.java
       when: "ansible_os_family == 'RedHat'"
       java_packages:
         - java-1.8.0-openjdk
     - role: geerlingguy.jenkins
+    - role: geerlingguy.git
