@@ -1,10 +1,26 @@
 ---
-- hosts: all
+- hosts: all 
   become: true
   become_user: root
+  vars:
+    git_packages:
+      - git
   roles:
     - role: geerlingguy.java
       when: "ansible_os_family == 'RedHat'"
       java_packages:
         - java-1.8.0-openjdk
     - role: geerlingguy.jenkins
+    - role: geerlingguy.git
+    - role: geerlingguy.nginx
+  
+  tasks:
+    - template: 
+        src=jenkins.conf 
+        dest=/etc/nginx/conf.d/jenkins.conf
+    - command: mv /etc/nginx/conf.d/default.conf /etc/nginx/conf.d/default.conf.disabled
+    - service:
+        name: nginx
+        state: restarted
+    - command: setsebool -P httpd_can_network_connect true
+
